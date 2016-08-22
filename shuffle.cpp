@@ -1,5 +1,4 @@
 #include <windows.h>
-#include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -14,7 +13,7 @@ inline char mask() {
 
 #define WHITE (FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE)
 #define BLUE (FOREGROUND_BLUE | FOREGROUND_INTENSITY)
-#define VERSION "0.1"
+#define VERSION "0.2"
 
 inline void printHelp() {
    printf(
@@ -30,11 +29,10 @@ inline void printHelp() {
 }
  
 int main(int argc, char **argv) {
-    char c;
     bool autoDecrypt = false;
     short unsigned int encryptColor = WHITE, decryptColor = BLUE;
-    while ((c = getopt(argc, argv, "e:d:hva")) != -1) {
-        switch(c) {
+    for (int i = 1; i < argc; ++i) {
+        if (argv[i][0] == '-') switch(argv[i][1]) {
             case 'v':
                 printf("shuffle " VERSION "\n");
                 return 0;
@@ -42,13 +40,13 @@ int main(int argc, char **argv) {
                 printHelp();
                 return 0;
             case 'e':
-                if (sscanf(optarg, "%hx", &encryptColor) != 1) {
+                if (++i >= argc || sscanf(argv[i], "%hx", &encryptColor) != 1) {
                     fprintf(stderr, "Error: missing color code after '-e'\n");
                     return 1;
                 }
                 break;
             case 'd':
-                if (sscanf(optarg, "%hx", &decryptColor) != 1) {
+                if (++i >= argc || sscanf(argv[i], "%hx", &decryptColor) != 1) {
                     fprintf(stderr, "Error: missing color code after '-d'\n");
                     return 1;
                 }
@@ -56,6 +54,12 @@ int main(int argc, char **argv) {
             case 'a':
                 autoDecrypt = true;
                 break;
+            default:
+                fprintf(stderr, "Error: unrecognized option '-%c'\n", argv[i][1]);
+                return 1;
+        } else {
+            fprintf(stderr, "Error: unrecognized argument '%s'\n", argv[i]);
+            return 1;
         }
     }
 
