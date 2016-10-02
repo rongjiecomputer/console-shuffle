@@ -13,7 +13,7 @@ inline char mask() {
 
 #define WHITE (FOREGROUND_RED | FOREGROUND_GREEN | FOREGROUND_BLUE)
 #define BLUE (FOREGROUND_BLUE | FOREGROUND_INTENSITY)
-#define VERSION "0.2"
+#define VERSION "0.3"
 
 inline void printHelp() {
    printf(
@@ -72,18 +72,19 @@ int main(int argc, char **argv) {
         CONSOLE_TEXTMODE_BUFFER, NULL);
     SetConsoleActiveScreenBuffer(hNew);
 
-    int R = info.srWindow.Bottom - info.srWindow.Top + 1,
-        C = info.srWindow.Right - info.srWindow.Left + 1, len = R*C;
-    CHAR_INFO charBuf[len];
-    SMALL_RECT windowSize = {0, 0, C-1, R-1};
+    short R = info.srWindow.Bottom - info.srWindow.Top + 1,
+        C = info.srWindow.Right - info.srWindow.Left + 1;
+    int len = R*C;
+    CHAR_INFO *charBuf = (CHAR_INFO*)malloc(len * sizeof(CHAR_INFO));
+    SMALL_RECT windowSize = {0, 0, short(C-1), short(R-1)};
     COORD bufSize = {C, R}, charPos = {0, 0}, curPos = {0, 0};
     DWORD written;
     ReadConsoleOutput(hStdout, charBuf, bufSize, charPos, &info.srWindow);
     FillConsoleOutputAttribute(hNew, encryptColor, len, charPos, &written);
 
     srand(time(0));
-    char original[len];
-    timing t[len];
+    char *original = (char*)malloc(len * sizeof(char));
+    timing *t = (timing*)malloc(len * sizeof(timing));
     for (int i = 0; i < len; ++i) {
         charBuf[i].Attributes = encryptColor;
         original[i] = charBuf[i].Char.AsciiChar;

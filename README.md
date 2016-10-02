@@ -2,9 +2,12 @@
 A simple Windows implementation of Brian Barto's [No More Secrets](https://github.com/bartobri/no-more-secrets)
 
 ## Build
-No extra library needed. All Windows compilers (mingw or Visual Studio) should work.
+No extra library needed. All Windows compilers (Mingw or MSVC) should work.
 ```
-g++ -o shuffle shuffle.cpp -O2
+# Mingw
+g++ -o shuffle shuffle.cpp -O2 -Wall -Wextra -pedantic
+# MSVC
+cl /D _CRT_SECURE_NO_WARNINGS /W4 /O2 shuffle.cpp
 ```
 
 ## Feature
